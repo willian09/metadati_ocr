@@ -155,10 +155,10 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                     if next_word_match:
                         cf_matches.append(next_word_match.group(0))
             
-            extracted_data["cf_matches"] = cf_matches # for debugging cf_matches 
             if len(cf_matches) < 4: # If still less than 4 matches are found, try to find the fiscal codes using the IT pattern
                 cf_matches = re.findall(cf_pattern_IT, cleaned_text)
                 
+            #extracted_data["cf_matches"] = cf_matches # for debugging cf_matches 
                                        
             if len(cf_matches) < 4: # If still less than 4 matches are found, try to find the fiscal codes using the alternative pattern
                 cf_matches = re.findall(cf_pattern_alternative, cleaned_text)
