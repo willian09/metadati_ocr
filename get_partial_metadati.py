@@ -127,7 +127,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             crop_text = re.sub(r"\[", " [", crop_text) # Add space before '['
             crop_text = re.sub(r"\{", " {", crop_text) # Add space before '{'
             crop_text = re.sub(r"_", " _", crop_text) # Add space before '_',             
-            crop_text = re.sub(r"\s+", " ", crop_text.replace(":", " ").replace("_", " ").replace(";", "1")) # Remove extra spaces and replace ':', '_' and ';' with space            
+            crop_text = re.sub(r"\s+", " ", crop_text.replace(":", " ").replace("_", " ").replace(";", "1").replace(".", "")) # Remove extra spaces and replace ':', '_' and ';' with space            
             cleaned_text = re.sub(r'[^\w\s]', '', crop_text) # Remove special characters
             corrected_text = [] # New list to store corrected words
            
@@ -144,11 +144,11 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             
             cf_matches = re.findall(cf_pattern, cleaned_text) # First, try to find the fiscal codes using the main pattern
                 
-            extracted_data["crop_text"] = crop_text # for debugging cf_matches
+            #extracted_data["crop_text"] = crop_text # for debugging cf_matches
             
             if len(cf_matches) < 4: # If less than 4 matches are found, try to find the fiscal codes using an alternative pattern
                 cf_matches = []
-                matches = re.finditer(r'(Codice Fiscalej|Flscalej|Cocice Fiscelel|Codke Fiscale|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|C0d1ce F1scalej|Codice Fiscale|Flscole|Flscate|F1scalej|Fiscalej|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|fiscnale)', crop_text, re.IGNORECASE)
+                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codke Fiscale|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|fiscnale)', crop_text, re.IGNORECASE)
                 for match in matches: # Take the next word after the match 
                     start_index = match.end()
                     next_word_match = re.search(r'\b\w+\b', crop_text[start_index:])
