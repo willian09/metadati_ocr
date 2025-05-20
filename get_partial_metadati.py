@@ -148,7 +148,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             
             if len(cf_matches) < 4: # If less than 4 matches are found, try to find the fiscal codes using an alternative pattern
                 cf_matches = []
-                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codke Fiscale|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|fiscnale)', crop_text, re.IGNORECASE)
+                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|fiscnale)', crop_text, re.IGNORECASE)
                 for match in matches: # Take the next word after the match 
                     start_index = match.end()
                     next_word_match = re.search(r'\b\w+\b', crop_text[start_index:])
@@ -179,7 +179,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             
                 if len(cf) == 13 and cf[0:2] in {'IT', '1T', 'I7', '17'}: # If the fiscal code has 13 characters and starts with items is the set, remove the first two characters
                     cf = cf[2:]
-                elif len(cf) == 12 and cf[0] in {'7', '[', '{', 'J', 'L', '1', '/'}: # If the fiscal code has 12 characters and starts with items in the set, remove the first character
+                elif len(cf) == 12 and cf[0] in {'7', '[', '{', 'J', 'j', 'L', 'l', '1', '/'}: # If the fiscal code has 12 characters and starts with items in the set, remove the first character
                     cf = cf[1:]
                 elif len(cf) == 11 and cf[0] in {'b', 'p', '5', '7', 'C', 'c'}: # If the fiscal code has 11 characters and starts with items in the set, remove the first character
                     cf = '0' + cf[1:]
