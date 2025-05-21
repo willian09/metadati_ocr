@@ -149,11 +149,18 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             if len(cf_matches) < 4: # If less than 4 matches are found, try to find the fiscal codes using an alternative pattern
                 cf_matches = []
                 matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|fiscnale)', crop_text, re.IGNORECASE)
-                for match in matches: # Take the next word after the match 
+                for match in matches:
                     start_index = match.end()
                     next_word_match = re.search(r'\b\w+\b', crop_text[start_index:])
                     if next_word_match:
-                        cf_matches.append(next_word_match.group(0))
+                        value1 = next_word_match.group(0)
+                        if len(value1) == 2: # If the next word is 2 characters long, check for the next word
+                            next_start = next_word_match.end()
+                            next_word2_match = re.search(r'\b\w+\b', crop_text[start_index + next_start:])
+                            if next_word2_match:
+                                cf_matches.append((value1 + next_word2_match.group(0)).strip())
+                        else:
+                            cf_matches.append(value1.strip())
             
             if len(cf_matches) < 4: # If still less than 4 matches are found, try to find the fiscal codes using the IT pattern
                 cf_matches = re.findall(cf_pattern_IT, cleaned_text)
@@ -181,7 +188,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                     cf = cf[2:]
                 elif len(cf) == 12 and cf[0] in {'7', '[', '{', 'J', 'j', 'L', 'l', '1', '/'}: # If the fiscal code has 12 characters and starts with items in the set, remove the first character
                     cf = cf[1:]
-                elif len(cf) == 11 and cf[0] in {'b', 'p', '5', '7', 'C', 'c'}: # If the fiscal code has 11 characters and starts with items in the set, remove the first character
+                elif len(cf) == 11 and cf[0] in {'b', 'p', '5', '6', '7', 'C', 'c'}: # If the fiscal code has 11 characters and starts with items in the set, remove the first character
                     cf = '0' + cf[1:]
                 elif len(cf) == 10: # If the fiscal code has 10 characters, add '0' at the beginning
                     cf = "0" + cf
