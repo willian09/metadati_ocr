@@ -144,11 +144,11 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             
             cf_matches = re.findall(cf_pattern, cleaned_text) # First, try to find the fiscal codes using the main pattern
                 
-            #extracted_data["crop_text"] = crop_text # for debugging cf_matches
+            extracted_data["crop_text"] = crop_text # for debugging cf_matches
             
             if len(cf_matches) < 4: # If less than 4 matches are found, try to find the fiscal codes using an alternative pattern
                 cf_matches = []
-                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|fiscnale|Fiscal|Fiscr|fisca)', crop_text, re.IGNORECASE)
+                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Fiscelo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|Ficcale|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|Flscalc|Fiscsie|fiscnale|Fiscde|Fiscds|Fisczs|Fiscae|Físcae|Fiscal|Flscala|Fiscze|Fiscr|fisca|Flccale|!iscalo)', crop_text, re.IGNORECASE)
                 for match in matches:
                     start_index = match.end()
                     next_word_match = re.search(r'\b\w+\b', crop_text[start_index:])
@@ -157,13 +157,21 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                         if len(value1) == 2: # If the next word is 2 characters long, check for the next word
                             next_start = next_word_match.end()
                             next_word2_match = re.search(r'\b\w+\b', crop_text[start_index + next_start:])
+                            value2 = next_word2_match.group(0) 
                             if next_word2_match:
-                                cf_matches.append((value1 + next_word2_match.group(0)).strip())
+                                if len(value2) == 10:
+                                    cf_matches.append((value1 + value2[1:]).strip())
+                                else:                                
+                                    cf_matches.append((value1 + value2).strip())
                         elif len(value1) == 1:
                             next_start = next_word_match.end()
                             next_word2_match = re.search(r'\b\w+\b', crop_text[start_index + next_start:])
+                            value2 = next_word2_match.group(0) 
                             if next_word2_match:
-                                cf_matches.append((value1 + next_word2_match.group(0)).strip())
+                                if len(value2) == 11:
+                                    cf_matches.append((value1 + value2[1:]).strip())
+                                else:
+                                    cf_matches.append((value1 + value2).strip())
                         else:
                             cf_matches.append(value1.strip())
             
@@ -177,7 +185,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             
             if len(cf_matches) == 4:
                 if (cf_matches[0] == "08443160158" or cf_matches[0] == "04636090963") and len(cf_matches[2]) != 11: # For Chanel and Gianni Versace
-                    cf_matches[2] = "FRRLSN70E21D969W"
+                    cf_matches[2] = "FRRLSN70R21D969W"
              
             #extracted_data["cf_matches"] = cf_matches # for debugging cf_matches
                       
@@ -193,7 +201,9 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                     cf = cf[2:]
                 elif len(cf) == 12 and cf[0] in {'7', '[', '{', 'J', 'j', 'L', 'l', '1', '/'}: # If the fiscal code has 12 characters and starts with items in the set, remove the first character
                     cf = cf[1:]
-                elif len(cf) == 11 and cf[0] in {'b', 'p', '5', '6', '7', 'C', 'c'}: # If the fiscal code has 11 characters and starts with items in the set, remove the first character
+                elif len(cf) == 12 and cf[0] == '0': # If the fiscal code has 12 characters and starts with '0', remove the last character
+                    cf = cf[:-1]
+                elif len(cf) == 11 and cf[0] in {'b', 'p', '5', '6', '7', 'C', 'c', '('}: # If the fiscal code has 11 characters and starts with items in the set, remove the first character
                     cf = '0' + cf[1:]
                 elif len(cf) == 10: # If the fiscal code has 10 characters, add '0' at the beginning
                     cf = "0" + cf
@@ -245,11 +255,20 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                             cod_rentri = ""
                     else:
                         cod_rentri = ""
-                
-                cod_rentri = cod_rentri[:15] if cod_rentri else ""
-                extracted_data["numero_formulario"] = cod_rentri  
-    
-    # Cleanup: remove temporary files    
+                        
+                if cod_rentri == "":
+                 words = crop_text.split()
+                 for idx in range(len(words)-2):
+                     if re.fullmatch(r'[A-Z]{5}', words[idx], re.IGNORECASE):
+                         if re.fullmatch(r'\d{6}', words[idx+1]):
+                                if re.fullmatch(r'[A-Z]{2}', words[idx+2], re.IGNORECASE):
+                                    cod_rentri = f"{words[idx]} {words[idx+1]} {words[idx+2]}"
+                                    break
+
+                cod_rentri = cod_rentri[:15].upper() if cod_rentri else ""
+                extracted_data["numero_formulario"] = cod_rentri
+
+    # Cleanup: remove temporary files
     os.remove(full_image_path)
     for i in range(len(crop_rectangles)):
         os.remove(f"img_crop_{i+1}.png")
