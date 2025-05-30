@@ -110,7 +110,10 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                 if cod_rentri_match:
                     cod_rentri = cod_rentri_match.group(0)
                     cod_rentri_numeric_part = cod_rentri[5:11].replace('o', '0').replace('O', '0').replace('i', '1').replace('I', '1')
-                    cod_rentri = f'{cod_rentri[:5].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")} {cod_rentri_numeric_part} {cod_rentri[11:].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")}'
+                    if not cod_rentri_numeric_part.isdigit():
+                        cod_rentri = ""
+                    else:
+                        cod_rentri = f'{cod_rentri[:5].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")} {cod_rentri_numeric_part} {cod_rentri[11:].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")}'
                 else:
                     cod_rentri = ""
            
@@ -127,7 +130,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             crop_text = re.sub(r"\[", " [", crop_text) # Add space before '['
             crop_text = re.sub(r"\{", " {", crop_text) # Add space before '{'
             crop_text = re.sub(r"_", " _", crop_text) # Add space before '_',             
-            crop_text = re.sub(r"\s+", " ", crop_text.replace(":", " ").replace("_", " ").replace(";", "1").replace(".", "").replace("€","")) # Remove extra spaces and replace ':', '_', ';', '.', and '€' with space            
+            crop_text = re.sub(r"\s+", " ", crop_text.replace(":", " ").replace("_", " ").replace(";", "1").replace(".", "").replace("€", "").replace("/", "1")) # Remove extra spaces and replace ':', '_', ';', '.', and '€' with space            
             cleaned_text = re.sub(r'[^\w\s]', '', crop_text) # Remove special characters
             corrected_text = [] # New list to store corrected words
            
@@ -148,7 +151,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             
             if len(cf_matches) < 4: # If less than 4 matches are found, try to find the fiscal codes using an alternative pattern
                 cf_matches = []
-                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Fiscelo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|Ficcale|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|Flscalc|Fiscsie|fiscnale|Fiscde|Fiscds|Fisczs|Fiscae|Físcae|Fiscal|Flscala|Fiscze|Fiscr|fisca|Flccale|!iscalo)', crop_text, re.IGNORECASE)
+                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Fiscelo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|Ficcale|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|Flscalc|Fiscsie|fiscnale|Fiscde|Fiscds|Fisczs|Fiscae|Físcae|Fiscal|Flscala|Fiscze|Fiscr|fisca|Flccale|!iscalo|Fra1e|liscale|Ilscale)', crop_text, re.IGNORECASE)
                 for match in matches:
                     start_index = match.end()
                     next_word_match = re.search(r'\b\w+\b', crop_text[start_index:])
@@ -241,7 +244,10 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                     if cod_rentri_match:
                         cod_rentri = cod_rentri_match.group(0)
                         cod_rentri_numeric_part = cod_rentri[5:11].replace('o', '0').replace('O', '0').replace('i', '1').replace('I', '1')
-                        cod_rentri = f'{cod_rentri[:5].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")} {cod_rentri_numeric_part} {cod_rentri[11:].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")}'
+                        if not cod_rentri_numeric_part.isdigit():
+                            cod_rentri = ""
+                        else:
+                            cod_rentri = f'{cod_rentri[:5].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")} {cod_rentri_numeric_part} {cod_rentri[11:].replace("O", "Q").replace("I", "T").replace("E", "F").replace("U", "V")}'
                     else:                        
                         cod_rentri = ""
                 
