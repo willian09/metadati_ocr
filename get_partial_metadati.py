@@ -134,7 +134,7 @@ def ocr_fir(pdf_path, json_path, page_number=0):
             cleaned_text = re.sub(r'[^\w\s]', '', crop_text) # Remove special characters
             corrected_text = [] # New list to store corrected words
            
-            #extracted_data["cleaned_text"] = cleaned_text # for debugging cleaned_text
+            #extracted_data["cleaned_text"] = cleaned_text # for debugging 
             
             for word in cleaned_text.split():                
                 substitutions = {'O': '0', 'o': '0', 'I': '1', 'i': '1'} # Mapping for replacements
@@ -143,15 +143,15 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                 corrected_text.append(word)
             cleaned_text = " ".join(corrected_text)
             
-            #extracted_data["cleaned_text"] = cleaned_text # for debugging cleaned_text
+            #extracted_data["cleaned_text"] = cleaned_text # for debugging 
             
             cf_matches = re.findall(cf_pattern, cleaned_text) # First, try to find the fiscal codes using the main pattern
                 
-            extracted_data["crop_text"] = crop_text # for debugging cf_matches
+            #extracted_data["crop_text"] = crop_text # for debugging 
             
-            if len(cf_matches) < 4: # If less than 4 matches are found, try to find the fiscal codes using an alternative pattern
+            if len(cf_matches) != 4: # If less than 4 matches are found, try to find the fiscal codes using an alternative pattern
                 cf_matches = []
-                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Fiscelo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|Ficcale|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|Flscalc|Fiscsie|fiscnale|Fiscde|Fiscds|Fisczs|Fiscae|Físcae|Fiscal|Flscala|Fiscze|Fiscr|fisca|Flccale|!iscalo|Fra1e|liscale|Ilscale)', crop_text, re.IGNORECASE)
+                matches = re.finditer(r'(Codice Fiscalej|Cocice Fiscelel|C0d1ce F1scalej|Flscalej|F1scalej|Fiscalej|Codica Flscalo|Codke Fiscale|Corlice Flscalo|Cadlicc Flscale|Cojico Fiscnlo|Corir Fi|CoceFicale|Cocice Fiscale|Cocico Fiscale|Ccdice Fiscale|codice fiscale|cocice Fiscale|Codice Fiscale|Flscole|Fiscala|Fiscalc|Fiscolo|Fiscelo|Flscate|Fiscalo|Fiscele|Fiscnlo|Ficcalu|físcale|Fiscale|flscale|Flscale|Fiscaye|Fiscelel|fisca1e|fiscaié|físcaié|fiscaie|fiscaíe|fiscá1e|f1scale|f1scaie|f8scale|fiseale|fisoale|fiscále|fiscäle|fiscâle|fiscãle|Ficcale|fiscalé|fiscalè|fiscalê|fi5cale|fisçale|fizcale|fiscalee|ficale|fiscai|ficsale|fisacle|fiscvale|Flscalc|Fiscsie|fiscnale|Fiscde|Fiscds|Fisczs|Fiscae|Físcae|Fiscal|Flscala|Fiscze|Fiscr|fisca|Flccale|!iscalo|Fra1e|liscale|Ilscale|scale)', crop_text, re.IGNORECASE)
                 for match in matches:
                     start_index = match.end()
                     next_word_match = re.search(r'\b\w+\b', crop_text[start_index:])
@@ -178,12 +178,12 @@ def ocr_fir(pdf_path, json_path, page_number=0):
                         else:
                             cf_matches.append(value1.strip())
             
-            if len(cf_matches) < 4: # If still less than 4 matches are found, try to find the fiscal codes using the IT pattern
+            if len(cf_matches) != 4: # If still less than 4 matches are found, try to find the fiscal codes using the IT pattern
                 cf_matches = re.findall(cf_pattern_IT, cleaned_text)
                 
-            #extracted_data["cf_matches"] = cf_matches # for debugging cf_matches 
-                                       
-            if len(cf_matches) < 4: # If still less than 4 matches are found, try to find the fiscal codes using the alternative pattern
+            #extracted_data["cf_matches"] = cf_matches # for debugging cf_matches
+
+            if len(cf_matches) != 4: # If still less than 4 matches are found, try to find the fiscal codes using the alternative pattern
                 cf_matches = re.findall(cf_pattern_alternative, cleaned_text)
             
             if len(cf_matches) == 4:
